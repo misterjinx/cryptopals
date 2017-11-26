@@ -1,6 +1,7 @@
 package set1
 
 import (
+	"bytes"
 	"encoding/hex"
 	"testing"
 )
@@ -14,7 +15,7 @@ I go crazy when I hear a cymbal`
 
 	xored := repeatingKeyXOR(input, key)
 
-	if hex.EncodeToString(xored) != expected {
+	if !bytes.Equal(xored, decodeHex(expected)) {
 		t.Error("Failed to XOR encode by repeating key. Expected", expected, "got", hex.EncodeToString(xored))
 	}
 }

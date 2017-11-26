@@ -1,6 +1,7 @@
 package set1
 
 import (
+	"bytes"
 	"testing"
 )
 
@@ -10,7 +11,7 @@ func TestDecryptSingleByteXOR(t *testing.T) {
 
 	actual, _, _ := decryptSingleByteXOR(input)
 
-	if string(actual) != expected {
+	if !bytes.Equal(actual, []byte(expected)) {
 		t.Error("Failed to decrypt single byte XOR. Expected ", expected, " got ", string(actual))
 	}
 }
