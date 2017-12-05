@@ -22,7 +22,7 @@ func detectSingleCharXOR() ([]byte, byte, float32) {
 	bestScore = 0.00
 
 	for scanner.Scan() {
-		decr, k, score := decryptSingleByteXOR(scanner.Text())
+		decr, k, score := decryptSingleByteXOR(decodeHex(scanner.Text()))
 
 		if score > bestScore {
 			bestScore = score

@@ -1,6 +1,6 @@
 package set1
 
-func repeatingKeyXOR(text string, key string) []byte {
+func repeatingKeyXOR(text string, key []byte) []byte {
 	textLength := len(text)
 	keyLength := len(key)
 

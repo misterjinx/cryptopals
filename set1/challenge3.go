@@ -37,12 +37,11 @@ var freqs = map[string]float32{
 	" ": 0.1918182,
 }
 
-func singleXOR(hexString string, c byte) []byte {
-	decodedString := decodeHex(hexString)
-	xored := make([]byte, len(decodedString))
+func singleXOR(input []byte, c byte) []byte {
+	xored := make([]byte, len(input))
 
-	for i := range decodedString {
-		xored[i] = decodedString[i] ^ c
+	for i := range input {
+		xored[i] = input[i] ^ c
 	}
 
 	return xored
@@ -66,7 +65,7 @@ func scoreText(text string) float32 {
 	return score
 }
 
-func decryptSingleByteXOR(hexString string) ([]byte, byte, float32) {
+func decryptSingleByteXOR(input []byte) ([]byte, byte, float32) {
 	var bestScore float32
 	var bestOutput []byte
 	var key byte
@@ -74,7 +73,7 @@ func decryptSingleByteXOR(hexString string) ([]byte, byte, float32) {
 	bestScore = 0.00
 
 	for c := 0; c <= 255; c++ { // ascii values
-		xored := singleXOR(hexString, byte(c))
+		xored := singleXOR(input, byte(c))
 		score := scoreText(string(xored))
 
 		if score > bestScore {

@@ -11,6 +11,6 @@ func TestDetectSingleCharXOR(t *testing.T) {
 	actual, _, _ := detectSingleCharXOR()
 
 	if strings.TrimSpace(string(actual)) != expected {
-		t.Error("Failed to detect single char XOR. Expected", expected, "got", actual)
+		t.Error("Failed to detect single char XOR. Expected", expected, "got", string(actual))
 	}
 }
