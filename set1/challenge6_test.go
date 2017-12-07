@@ -49,15 +49,18 @@ func TestBreakVigenere(t *testing.T) {
 	}
 
 	expectedKey := "Terminator X: Bring the noise"
-	firstExpectedOutput := "I'm back and I'm ringin' the bell"
+	expectedOutput, err := ioutil.ReadFile("./6.out")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	output, key := breakVigenere(decodedContent)
+	actualOutput, actualKey := breakVigenere(decodedContent)
 
-	if !bytes.Equal(key, []byte(expectedKey)) {
+	if !bytes.Equal(actualKey, []byte(expectedKey)) {
 		t.Error("Failed to find the correct key to decrypt Vigenere cipher")
 	}
 
-	if !bytes.Equal(output[0:len(firstExpectedOutput)], []byte(firstExpectedOutput)) {
+	if !bytes.Equal(actualOutput, expectedOutput) {
 		t.Error("Failed to decrypt Vigenere cipher")
 	}
 }
