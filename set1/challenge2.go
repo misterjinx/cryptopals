@@ -2,18 +2,15 @@ package set1
 
 import "log"
 
-func fixedXOR(buf1 string, buf2 string) []byte {
+func FixedXOR(buf1 []byte, buf2 []byte) []byte {
 	if len(buf1) != len(buf2) {
 		log.Fatal("Buffers have different lengths")
 	}
 
-	buf1Decoded := decodeHex(buf1)
-	buf2Decoded := decodeHex(buf2)
+	xored := make([]byte, len(buf1))
 
-	xored := make([]byte, len(buf1Decoded))
-
-	for i := range buf1Decoded {
-		xored[i] = buf1Decoded[i] ^ buf2Decoded[i]
+	for i := range buf1 {
+		xored[i] = buf1[i] ^ buf2[i]
 	}
 
 	return xored

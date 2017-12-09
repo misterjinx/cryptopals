@@ -25,7 +25,7 @@ func TestAes128EcbDecrypt(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	plaintext, err := aes128ecbDecryptSimple(decodedContent, []byte(key))
+	plaintext, err := aes128ecbDecrypt(decodedContent, []byte(key))
 	if err != nil {
 		log.Fatal(err)
 	}
