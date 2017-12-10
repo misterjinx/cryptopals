@@ -2,7 +2,7 @@ package set1
 
 import "bytes"
 
-func detectAes128EcbEncryption(cipherText []byte) bool {
+func DetectAes128EcbEncryption(cipherText []byte) bool {
 	blockSize := 16
 
 	var blocks [][]byte

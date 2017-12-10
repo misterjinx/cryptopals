@@ -9,7 +9,7 @@ func TestPkcs7Padding(t *testing.T) {
 	input := []byte("YELLOW SUBMARINE")
 	size := 20
 
-	padding := []byte{PKCS7_PAD, PKCS7_PAD, PKCS7_PAD, PKCS7_PAD}
+	padding := []byte{0x04, 0x04, 0x04, 0x04}
 	expected := append(input, padding...)
 	actual := pkcs7padding(input, size)
 

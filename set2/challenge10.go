@@ -10,12 +10,6 @@ import (
  * https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_Block_Chaining_(CBC)
  */
 func encryptAesCbcMode(plainText []byte, key []byte, iv []byte) ([]byte, error) {
-	if len(plainText)%aes.BlockSize != 0 {
-		return nil, errors.New("Plaintext is not multiple of block size")
-	}
-
-	var cipherText []byte
-
 	cipher, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
@@ -23,6 +17,13 @@ func encryptAesCbcMode(plainText []byte, key []byte, iv []byte) ([]byte, error) 
 
 	plainTextLength := len(plainText)
 	blockSize := cipher.BlockSize()
+
+	if len(plainText)%aes.BlockSize != 0 {
+		// apply pkcs7 padding
+		plainText = pkcs7padding(plainText, blockSize)
+	}
+
+	var cipherText []byte
 
 	var previousBlock []byte
 
@@ -48,19 +49,22 @@ func encryptAesCbcMode(plainText []byte, key []byte, iv []byte) ([]byte, error) 
  * https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_Block_Chaining_(CBC)
  */
 func decryptAesCbcMode(cipherText []byte, key []byte, iv []byte) ([]byte, error) {
-	if len(cipherText) < aes.BlockSize {
-		return nil, errors.New("Ciphertext is shorter than block size")
-	}
-
 	cipher, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
 
-	var plainText []byte
-
 	cipherTextLength := len(cipherText)
 	blockSize := cipher.BlockSize()
+
+	if cipherTextLength < blockSize {
+		return nil, errors.New("Ciphertext is shorter than block size")
+	}
+	if cipherTextLength%blockSize != 0 {
+		return nil, errors.New("Cannot perform AES CBC decryption, ciphertext is not multiple of block size")
+	}
+
+	var plainText []byte
 
 	var previousBlock []byte
 	for i := 0; i < cipherTextLength; i += blockSize {

@@ -1,15 +1,22 @@
 package set2
 
-const PKCS7_PAD = byte(0x04)
-
+/**
+ * https://en.wikipedia.org/wiki/Padding_(cryptography)#PKCS7
+ *
+ * For the moment I don't add padding to plaintexts multiple of block size
+ */
 func pkcs7padding(plainText []byte, blockSize int) []byte {
 	plainTextLength := len(plainText)
-	if plainTextLength >= blockSize {
+	remainder := plainTextLength % blockSize
+
+	if remainder == 0 {
 		return plainText
 	}
 
-	for i := plainTextLength; i < blockSize; i++ {
-		plainText = append(plainText, PKCS7_PAD)
+	paddingBytesToAdd := blockSize - remainder
+
+	for i := 0; i < paddingBytesToAdd; i++ {
+		plainText = append(plainText, byte(paddingBytesToAdd))
 	}
 
 	return plainText

@@ -2,6 +2,7 @@ package set1
 
 import (
 	"crypto/aes"
+	"errors"
 )
 
 /**
@@ -15,7 +16,7 @@ import (
  * @TODO: figure out why decryption using go aes package has 4 EOT
  * characters at the end, while decryption using openssl do not
  */
-func aes128ecbDecrypt(cipherText []byte, key []byte) ([]byte, error) {
+func Aes128ecbDecrypt(cipherText []byte, key []byte) ([]byte, error) {
 	cipher, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
@@ -25,6 +26,10 @@ func aes128ecbDecrypt(cipherText []byte, key []byte) ([]byte, error) {
 
 	cipherLength := len(cipherText)
 	blockSize := cipher.BlockSize()
+
+	if cipherLength%blockSize != 0 {
+		return nil, errors.New("Cannot perform AES ECB decryption, cipher text length not multiple of AES block size")
+	}
 
 	for i := 0; i < cipherLength; i += blockSize {
 		decrytedBlock := make([]byte, blockSize)

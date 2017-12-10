@@ -27,7 +27,7 @@ func TestDetectAes128EcbEncryption(t *testing.T) {
 			log.Fatal(err)
 		}
 
-		if detectAes128EcbEncryption(decodedContent) {
+		if DetectAes128EcbEncryption(decodedContent) {
 			actual = string(line)
 			break
 		}
