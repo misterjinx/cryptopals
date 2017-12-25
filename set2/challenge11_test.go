@@ -19,7 +19,7 @@ func TestGenerateRandomAesKey(t *testing.T) {
 }
 
 func TestEncryptionOracle(t *testing.T) {
-	plainText := []byte("testTESTtestTEST")
+	plainText := []byte("This is a sentence of a carefully chosen length.") // 48 bytes
 	cipherText, err, mode := encryptionOracle(plainText)
 	if err != nil {
 		t.Error("Failed to do oracle encryption.", err)
