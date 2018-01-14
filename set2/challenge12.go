@@ -2,9 +2,7 @@ package set2
 
 import (
 	"bytes"
-	"crypto/aes"
 	"encoding/base64"
-	"log"
 )
 
 const UNKNOWN_KEY = "QeGK6ThvFTuFa27R"
@@ -18,7 +16,7 @@ func encryptionECB(plainText []byte) ([]byte, error) {
 
 	unknownText, err := base64.StdEncoding.DecodeString("Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK")
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	finalPlainText = append(finalPlainText, unknownText...)
@@ -41,9 +39,11 @@ func encryptionECB(plainText []byte) ([]byte, error) {
  * https://c0nradsc0rner.wordpress.com/2016/07/03/ecb-byte-at-a-time/
  */
 func byteAtATimeECBDecryptionSimple() ([]byte, error) {
-	var decrypted []byte
+	// determine the size of the ciphertext
+	a, _ := encryptionECB([]byte("A"))
+	size := len(a)
 
-	size := aes.BlockSize * 9 // assuming the size of the text
+	var decrypted []byte
 
 	for i := size - 1; i > 0; i-- {
 		input := bytes.Repeat([]byte("A"), i)
