@@ -1,10 +1,8 @@
 package set1
 
-import "log"
-
 func FixedXOR(buf1 []byte, buf2 []byte) []byte {
-	if len(buf1) != len(buf2) {
-		log.Fatal("Buffers have different lengths")
+	if len(buf1) > len(buf2) {
+		buf1 = buf1[:len(buf2)]
 	}
 
 	xored := make([]byte, len(buf1))
