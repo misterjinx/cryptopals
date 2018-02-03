@@ -18,7 +18,7 @@ func encryptInputTextCBC(inputText []byte) ([]byte, error) {
 	input = append(input, escapeInput(inputText)...)
 	input = append(input, suffix...)
 
-	cipher, err := encryptAesCbcMode(input, []byte(SOME_RANDOM_KEY), []byte(SOME_RANDOM_IV))
+	cipher, err := EncryptAesCbcMode(input, []byte(SOME_RANDOM_KEY), []byte(SOME_RANDOM_IV))
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +27,7 @@ func encryptInputTextCBC(inputText []byte) ([]byte, error) {
 }
 
 func decryptCipherTextCBC(cipherText []byte) ([]byte, error) {
-	text, err := decryptAesCbcMode(cipherText, []byte(SOME_RANDOM_KEY), []byte(SOME_RANDOM_IV))
+	text, err := DecryptAesCbcMode(cipherText, []byte(SOME_RANDOM_KEY), []byte(SOME_RANDOM_IV))
 	if err != nil {
 		return nil, err
 	}

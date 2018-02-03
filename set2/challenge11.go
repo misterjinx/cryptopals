@@ -58,7 +58,7 @@ func encryptionOracle(plainText []byte) ([]byte, error, string) {
 			return nil, err, mode
 		}
 
-		cipherText, err = encryptAesCbcMode(finalPlainText, key, iv)
+		cipherText, err = EncryptAesCbcMode(finalPlainText, key, iv)
 		if err != nil {
 			return nil, err, mode
 		}

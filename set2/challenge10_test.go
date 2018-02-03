@@ -3,7 +3,7 @@ package set2
 import (
 	"bytes"
 	"encoding/base64"
-	"io/ioutil"
+    "io/ioutil"
 	"log"
 	"testing"
 )
@@ -13,14 +13,15 @@ func TestEncryptAndDecryptAesCbcMode(t *testing.T) {
 	iv := []byte("abcdefghijklmnop")        // 16 bytes
 	plainText := []byte("testTESTtestTEST") // 16 bytes
 
-	cipherText, err := encryptAesCbcMode(plainText, key, iv)
+	cipherText, err := EncryptAesCbcMode(plainText, key, iv)
 	if err != nil {
 		t.Error("Failed to encrypt AES CBC mode, got error:", err)
 	}
 
-	result, _ := decryptAesCbcMode(cipherText, key, iv)
+	result, _ := DecryptAesCbcMode(cipherText, key, iv)
+	actual := append(plainText, bytes.Repeat([]byte{16}, 16)...) // apply padding manually
 
-	if !bytes.Equal(result, plainText) {
+	if !bytes.Equal(result, actual) {
 		t.Error("Failed to test AES CBC encrypt and decrypt")
 	}
 }
@@ -39,7 +40,7 @@ func TestDecryptAesCbcModeAgainstProvidedFile(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	plainText, _ := decryptAesCbcMode(cipherText, key, iv)
+	plainText, _ := DecryptAesCbcMode(cipherText, key, iv)
 
 	expected, err := ioutil.ReadFile("./10.out")
 	if err != nil {

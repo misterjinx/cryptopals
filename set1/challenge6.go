@@ -36,7 +36,7 @@ func bytesToBinary(s []byte) string {
 func breakVigenere(text []byte) ([]byte, []byte) {
 	keysize := detectVigenereKeySize(text)
 
-	blocks := chunkArray(text, keysize)
+	blocks := ChunkArray(text, keysize)
 
 	var transpose [][]byte
 
@@ -111,7 +111,7 @@ func detectVigenereKeySize(text []byte) int {
 	return detectedKeySize
 }
 
-func chunkArray(array []byte, size int) [][]byte {
+func ChunkArray(array []byte, size int) [][]byte {
 	var chunks [][]byte
 	var chunk []byte
 

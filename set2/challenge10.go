@@ -9,24 +9,22 @@ import (
 /**
  * https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_Block_Chaining_(CBC)
  */
-func encryptAesCbcMode(plainText []byte, key []byte, iv []byte) ([]byte, error) {
+func EncryptAesCbcMode(plainText []byte, key []byte, iv []byte) ([]byte, error) {
 	cipher, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
 
-	plainTextLength := len(plainText)
 	blockSize := cipher.BlockSize()
 
-	if len(plainText)%aes.BlockSize != 0 {
-		// apply pkcs7 padding
-		plainText = pkcs7padding(plainText, blockSize)
-	}
+	// apply pkcs7 padding
+	plainText = pkcs7padding(plainText, blockSize)
 
 	var cipherText []byte
 
 	var previousBlock []byte
 
+	plainTextLength := len(plainText)
 	for i := 0; i < plainTextLength; i += blockSize {
 		if i == 0 {
 			previousBlock = iv
@@ -48,7 +46,7 @@ func encryptAesCbcMode(plainText []byte, key []byte, iv []byte) ([]byte, error) 
 /**
  * https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_Block_Chaining_(CBC)
  */
-func decryptAesCbcMode(cipherText []byte, key []byte, iv []byte) ([]byte, error) {
+func DecryptAesCbcMode(cipherText []byte, key []byte, iv []byte) ([]byte, error) {
 	cipher, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err

@@ -28,9 +28,9 @@ func TestHammingDistance(t *testing.T) {
 
 func TestArrayChunk(t *testing.T) {
 	input := []byte("abcdefghij")
-	expected := [][]byte{[]byte{97, 98, 99}, []byte{100, 101, 102}, []byte{103, 104, 105}, []byte{106}}
+	expected := [][]byte{{97, 98, 99}, {100, 101, 102}, {103, 104, 105}, {106}}
 
-	actual := chunkArray(input, 3)
+	actual := ChunkArray(input, 3)
 
 	if !reflect.DeepEqual(actual, expected) {
 		t.Error("Failed to chunk array. Expected", expected, "got", actual)

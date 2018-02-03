@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-func pkcs7unpadding(paddedText []byte, blockSize int) ([]byte, error) {
+func Pkcs7unpadding(paddedText []byte, blockSize int) ([]byte, error) {
 	var text []byte
 
 	textLength := len(paddedText)
@@ -14,14 +14,18 @@ func pkcs7unpadding(paddedText []byte, blockSize int) ([]byte, error) {
 	}
 
 	lastByte := paddedText[textLength-1]
-	if lastByte > 0 && lastByte < 16 {
-		textPadding := paddedText[textLength-int(lastByte):]
-		validPadding := bytes.Repeat([]byte{lastByte}, int(lastByte))
-
-		if bytes.Equal(textPadding, validPadding) {
-			text = paddedText[:textLength-int(lastByte)]
-		}
+	if lastByte < 1 || lastByte > 16 {
+		return nil, errors.New("Cannot unpad text")
 	}
+
+	textPadding := paddedText[textLength-int(lastByte):]
+	validPadding := bytes.Repeat([]byte{lastByte}, int(lastByte))
+
+	if !bytes.Equal(textPadding, validPadding) {
+		return nil, errors.New("Invalid padding")
+	}
+
+	text = paddedText[:textLength-int(lastByte)]
 
 	return text, nil
 }
