@@ -1,16 +1,20 @@
 package set1
 
 import (
-	"strings"
+	"bytes"
+	"encoding/base64"
 	"testing"
 )
 
 func TestDetectSingleCharXOR(t *testing.T) {
-	expected := "Now that the party is jumping"
+	expected, err := base64.StdEncoding.DecodeString("Tm93IHRoYXQgdGhlIHBhcnR5IGlzIGp1bXBpbmc=")
+	if err != nil {
+		t.Fatal("Failed to bas64 decode expected string")
+	}
 
 	actual, _, _ := detectSingleCharXOR()
 
-	if strings.TrimSpace(string(actual)) != expected {
+	if bytes.Equal(actual, expected) {
 		t.Error("Failed to detect single char XOR. Expected", expected, "got", string(actual))
 	}
 }

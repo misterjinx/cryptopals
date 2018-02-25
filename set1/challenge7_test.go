@@ -4,30 +4,34 @@ import (
 	"bytes"
 	"encoding/base64"
 	"io/ioutil"
-	"log"
 	"testing"
 )
 
 func TestAes128EcbDecrypt(t *testing.T) {
-	key := "YELLOW SUBMARINE"
+	key := []byte("YELLOW SUBMARINE")
 	content, err := ioutil.ReadFile("./7.txt")
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
 	decodedContent, err := base64.StdEncoding.DecodeString(string(content))
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
-	expected, err := ioutil.ReadFile("./7.out")
+	expectedEncoded, err := ioutil.ReadFile("./7.out")
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal("Failed to read base64 encoded output: ", err)
 	}
 
-	plaintext, err := Aes128ecbDecrypt(decodedContent, []byte(key))
+	expected, err := base64.StdEncoding.DecodeString(string(expectedEncoded))
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal("Failed to base64 decode expected output: ", err)
+	}
+
+	plaintext, err := Aes128ecbDecrypt(decodedContent, key)
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	if !bytes.Equal(expected, plaintext) {

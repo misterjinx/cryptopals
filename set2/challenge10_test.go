@@ -3,8 +3,7 @@ package set2
 import (
 	"bytes"
 	"encoding/base64"
-    "io/ioutil"
-	"log"
+	"io/ioutil"
 	"testing"
 )
 
@@ -32,19 +31,24 @@ func TestDecryptAesCbcModeAgainstProvidedFile(t *testing.T) {
 
 	content, err := ioutil.ReadFile("./10.txt")
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
 	cipherText, err := base64.StdEncoding.DecodeString(string(content))
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
 	plainText, _ := DecryptAesCbcMode(cipherText, key, iv)
 
-	expected, err := ioutil.ReadFile("./10.out")
+	expectedEncoded, err := ioutil.ReadFile("./10.out")
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal("Failed to read base64 encoded expected output")
+	}
+
+	expected, err := base64.StdEncoding.DecodeString(string(expectedEncoded))
+	if err != nil {
+		t.Fatal("Failed to base64 decode expected output: ", err)
 	}
 
 	if !bytes.Equal(plainText, expected) {

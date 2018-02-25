@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/base64"
 	"io/ioutil"
-	"log"
 	"reflect"
 	"testing"
 )
@@ -40,23 +39,32 @@ func TestArrayChunk(t *testing.T) {
 func TestBreakVigenere(t *testing.T) {
 	content, err := ioutil.ReadFile("./6.txt")
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
 	decodedContent, err := base64.StdEncoding.DecodeString(string(content))
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
-	expectedKey := "Terminator X: Bring the noise"
-	expectedOutput, err := ioutil.ReadFile("./6.out")
+	expectedKey, err := base64.StdEncoding.DecodeString("VGVybWluYXRvciBYOiBCcmluZyB0aGUgbm9pc2U=")
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal("Failed to base64 decode expected key: ", err)
+	}
+
+	expectedOutputEncoded, err := ioutil.ReadFile("./6.out")
+	if err != nil {
+		t.Fatal("Failed to read base64 encoded expected output: ", err)
+	}
+
+	expectedOutput, err := base64.StdEncoding.DecodeString(string(expectedOutputEncoded))
+	if err != nil {
+		t.Fatal("Failed to base64 decode expected output: ", err)
 	}
 
 	actualOutput, actualKey := breakVigenere(decodedContent)
 
-	if !bytes.Equal(actualKey, []byte(expectedKey)) {
+	if !bytes.Equal(actualKey, expectedKey) {
 		t.Error("Failed to find the correct key to decrypt Vigenere cipher")
 	}
 

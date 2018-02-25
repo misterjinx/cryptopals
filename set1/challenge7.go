@@ -12,9 +12,6 @@ import (
  * separately. Each encrypted block is decrypted separately by taking
  * corresponding blocks of specific size and decrypting them using the
  * decryption key.
- *
- * @TODO: figure out why decryption using go aes package has 4 EOT
- * characters at the end, while decryption using openssl do not
  */
 func Aes128ecbDecrypt(cipherText []byte, key []byte) ([]byte, error) {
 	cipher, err := aes.NewCipher(key)
