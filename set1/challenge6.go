@@ -54,11 +54,11 @@ func breakVigenere(text []byte) ([]byte, []byte) {
 	var finalKey []byte
 
 	for _, block := range transpose {
-		_, blockKey, _ := decryptSingleByteXOR(block)
+		_, blockKey, _ := DecryptSingleByteXOR(block, nil)
 		finalKey = append(finalKey, blockKey)
 	}
 
-	result := repeatingKeyXOR(string(text), finalKey)
+	result := RepeatingKeyXOR(text, finalKey)
 
 	return result, finalKey
 }

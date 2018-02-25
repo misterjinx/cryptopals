@@ -10,7 +10,7 @@ func TestDecryptSingleByteXOR(t *testing.T) {
 	expected := "Cooking MC's like a pound of bacon"
 
 	inputDecoded := decodeHex(input)
-	actual, _, _ := decryptSingleByteXOR(inputDecoded)
+	actual, _, _ := DecryptSingleByteXOR(inputDecoded, nil)
 
 	if !bytes.Equal(actual, []byte(expected)) {
 		t.Error("Failed to decrypt single byte XOR. Expected ", expected, " got ", string(actual))
