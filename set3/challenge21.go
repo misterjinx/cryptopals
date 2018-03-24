@@ -74,7 +74,7 @@ func (mt *MT19937) Twist() {
 	mt.Index = 0
 }
 
-func newMT19937(seed uint32) *MT19937 {
+func NewMT19937(seed uint32) *MT19937 {
 	twister := &MT19937{
 		Seed: seed,
 	}

@@ -21,13 +21,13 @@ func encryptionOracle(plainText []byte) ([]byte, error, string) {
 
 	key, _ := generateRandomAesKey()
 
-	beforeSize := generateRandomNumber(5, 10)
+	beforeSize := GenerateRandomNumber(5, 10)
 	bytesBefore, err := generateRandomBytes(beforeSize)
 	if err != nil {
 		return nil, err, mode
 	}
 
-	afterSize := generateRandomNumber(5, 10)
+	afterSize := GenerateRandomNumber(5, 10)
 	bytesAfter, err := generateRandomBytes(afterSize)
 	if err != nil {
 		return nil, err, mode
@@ -40,7 +40,7 @@ func encryptionOracle(plainText []byte) ([]byte, error, string) {
 
 	cipherText := make([]byte, len(finalPlainText))
 
-	choice := generateRandomNumber(0, 1) // 0 or 1
+	choice := GenerateRandomNumber(0, 1) // 0 or 1
 	if choice == 0 {
 		// do ecb
 		mode = "ecb"
@@ -77,7 +77,7 @@ func generateRandomBytes(size int) ([]byte, error) {
 	return key, nil
 }
 
-func generateRandomNumber(min int, max int) int {
+func GenerateRandomNumber(min int, max int) int {
 	s1 := mrand.NewSource(time.Now().UnixNano()) // seed
 	r1 := mrand.New(s1)
 
