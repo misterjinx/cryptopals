@@ -3,7 +3,6 @@ package set3
 import (
 	"bytes"
 	"math"
-	"time"
 )
 
 func encryptUsingMT19937StreamCipher(inputText []byte, key uint16) []byte {
@@ -48,7 +47,7 @@ func recoverMT19937StreamCipherKey(cipherText []byte, plainTextKnownSuffix []byt
 }
 
 func generateRandomPasswordResetTokenUsingMT19937(size int) []byte {
-	seed := uint32(time.Now().UnixNano() / int64(time.Millisecond))
+	seed := getMT19937Seed()
 
 	token := make([]byte, size)
 
@@ -64,7 +63,7 @@ func generateRandomPasswordResetTokenUsingMT19937(size int) []byte {
 func isResetTokenGeneratedUsingMT19937(resetToken []byte) bool {
 	interval := 3600 * 24
 	tokenLength := len(resetToken)
-	seed := uint32(time.Now().UnixNano() / int64(time.Millisecond))
+	seed := getMT19937Seed()
 
 	var i uint32
 	for i = 0; i < uint32(interval); i++ {

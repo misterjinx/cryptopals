@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"cryptopals/utils"
 	"testing"
-	"time"
 )
 
 func TestMT19937StreamCipher(t *testing.T) {
@@ -14,7 +13,7 @@ func TestMT19937StreamCipher(t *testing.T) {
 
 	t.Log("Plaintext:", string(input))
 
-	key := uint16(time.Now().UnixNano() / int64(time.Millisecond))
+	key := uint16(getMT19937Seed())
 
 	t.Log("Key:", key)
 

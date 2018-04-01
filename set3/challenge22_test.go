@@ -2,11 +2,10 @@ package set3
 
 import (
 	"testing"
-	"time"
 )
 
 func TestCrackMT19937Seed(t *testing.T) {
-	seed := uint32(time.Now().UnixNano() / int64(time.Millisecond))
+	seed := getMT19937Seed()
 
 	t.Log("Seed is", seed)
 

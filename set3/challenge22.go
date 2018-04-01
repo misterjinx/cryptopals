@@ -19,7 +19,7 @@ func getMT19937RandomNumber(seed uint32) uint32 {
 }
 
 func crackMT19937Seed(random uint32) uint32 {
-	seed := uint32(time.Now().UnixNano() / int64(time.Millisecond))
+	seed := getMT19937Seed()
 
 	for seed > 0 {
 		mt := NewMT19937(seed)
@@ -31,4 +31,8 @@ func crackMT19937Seed(random uint32) uint32 {
 	}
 
 	return seed
+}
+
+func getMT19937Seed() uint32 {
+	return uint32(time.Now().UnixNano() / int64(time.Millisecond))
 }

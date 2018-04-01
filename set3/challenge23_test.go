@@ -2,11 +2,10 @@ package set3
 
 import (
 	"testing"
-	"time"
 )
 
 func TestCloneMT19937(t *testing.T) {
-	seed := uint32(time.Now().UnixNano() / int64(time.Millisecond))
+	seed := getMT19937Seed()
 
 	mt := NewMT19937(seed)
 
