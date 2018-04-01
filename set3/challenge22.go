@@ -1,18 +1,18 @@
 package set3
 
 import (
-	"cryptopals/set2"
+	"cryptopals/utils"
 	"time"
 )
 
 func getMT19937RandomNumber(seed uint32) uint32 {
-	wait1 := set2.GenerateRandomNumber(40, 100) // reduce the waiting time
+	wait1 := utils.GenerateRandomNumber(40, 100) // reduce the waiting time
 	time.Sleep(time.Duration(wait1) * time.Millisecond)
 
 	mt := NewMT19937(seed)
 	number := mt.ExtractNumber()
 
-	wait2 := set2.GenerateRandomNumber(40, 100)
+	wait2 := utils.GenerateRandomNumber(40, 100)
 	time.Sleep(time.Duration(wait2) * time.Millisecond)
 
 	return number

@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"crypto/aes"
 	"cryptopals/set1"
+	"cryptopals/utils"
 	"testing"
 )
 
 func TestGenerateRandomAesKey(t *testing.T) {
-	key, err := generateRandomAesKey()
+	key, err := utils.GenerateRandomAesKey()
 	if err != nil {
 		t.Error("Failed to generate random AES key. Error:", err)
 	}

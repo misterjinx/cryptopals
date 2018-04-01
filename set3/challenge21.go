@@ -47,6 +47,8 @@ func (mt *MT19937) ExtractNumber() uint32 {
 
 	y := mt.States[mt.Index]
 
+	// tempering operation
+
 	// Right shift by u = 11 bits
 	y = y ^ (y >> u)
 	// Shift y left by s = 7 and take the bitwise and of b

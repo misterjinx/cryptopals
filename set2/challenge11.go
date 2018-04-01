@@ -2,33 +2,22 @@ package set2
 
 import (
 	"crypto/aes"
-	"crypto/rand"
-	mrand "math/rand"
-	"time"
+	"cryptopals/utils"
 )
-
-func generateRandomAesKey() ([]byte, error) {
-	key, err := generateRandomBytes(aes.BlockSize)
-	if err != nil {
-		return nil, err
-	}
-
-	return key, nil
-}
 
 func encryptionOracle(plainText []byte) ([]byte, error, string) {
 	var mode string
 
-	key, _ := generateRandomAesKey()
+	key, _ := utils.GenerateRandomAesKey()
 
-	beforeSize := GenerateRandomNumber(5, 10)
-	bytesBefore, err := generateRandomBytes(beforeSize)
+	beforeSize := utils.GenerateRandomNumber(5, 10)
+	bytesBefore, err := utils.GenerateRandomBytes(beforeSize)
 	if err != nil {
 		return nil, err, mode
 	}
 
-	afterSize := GenerateRandomNumber(5, 10)
-	bytesAfter, err := generateRandomBytes(afterSize)
+	afterSize := utils.GenerateRandomNumber(5, 10)
+	bytesAfter, err := utils.GenerateRandomBytes(afterSize)
 	if err != nil {
 		return nil, err, mode
 	}
@@ -40,7 +29,7 @@ func encryptionOracle(plainText []byte) ([]byte, error, string) {
 
 	cipherText := make([]byte, len(finalPlainText))
 
-	choice := GenerateRandomNumber(0, 1) // 0 or 1
+	choice := utils.GenerateRandomNumber(0, 1) // 0 or 1
 	if choice == 0 {
 		// do ecb
 		mode = "ecb"
@@ -53,7 +42,7 @@ func encryptionOracle(plainText []byte) ([]byte, error, string) {
 		// do cbc
 		mode = "cbc"
 
-		iv, err := generateRandomBytes(16)
+		iv, err := utils.GenerateRandomBytes(16)
 		if err != nil {
 			return nil, err, mode
 		}
@@ -65,23 +54,6 @@ func encryptionOracle(plainText []byte) ([]byte, error, string) {
 	}
 
 	return cipherText, nil, mode
-}
-
-func generateRandomBytes(size int) ([]byte, error) {
-	key := make([]byte, size)
-	_, err := rand.Read(key)
-	if err != nil {
-		return nil, err
-	}
-
-	return key, nil
-}
-
-func GenerateRandomNumber(min int, max int) int {
-	s1 := mrand.NewSource(time.Now().UnixNano()) // seed
-	r1 := mrand.New(s1)
-
-	return r1.Intn(max-min+1) + min
 }
 
 /**
