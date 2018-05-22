@@ -33,12 +33,21 @@ const (
 	k4 uint32 = 0xCA62C1D6
 )
 
-func SHA1Digest(input []byte) [digestSize]byte {
-	/* Initial state */
-	h := [5]uint32{h0, h1, h2, h3, h4}
+type SHA1 struct {
+	h [5]uint32 // registers
+	l int       // input length; declared because it's useful when doing the length extension attack
+}
 
-	l := len(input)
-	ml := l * 8 /* message length in bits */
+func (hash *SHA1) Init() {
+	hash.l = 0
+
+	/* Initial state */
+	hash.h = [5]uint32{h0, h1, h2, h3, h4}
+}
+
+func (hash *SHA1) Digest(input []byte) [digestSize]byte {
+	hash.l += len(input)
+	ml := hash.l * 8 /* message length in bits */
 
 	/* Pre-processing */
 
@@ -46,7 +55,7 @@ func SHA1Digest(input []byte) [digestSize]byte {
 	input = append(input, byte(0x80))
 
 	/* append 0 ≤ k < 512 bits '0', such that the resulting message length in bits is congruent to −64 ≡ 448 (mod 512) */
-	paddingCount := 64 - (l+9)%64
+	paddingCount := 64 - (hash.l+9)%64
 	for i := 0; i < paddingCount; i++ {
 		input = append(input, byte(0x00))
 	}
@@ -58,9 +67,9 @@ func SHA1Digest(input []byte) [digestSize]byte {
 
 	/* Process the message in successive 512-bit chunks: */
 
-	l = len(input) /* length is different after the padding process */
+	nl := len(input) /* length is different after the padding process */
 	/* break message into 512-bit chunks */
-	for i := 0; i < l; i += blockSize { // 512 bits = 64 bytes
+	for i := 0; i < nl; i += blockSize { // 512 bits = 64 bytes
 		chunk := input[i : i+blockSize]
 
 		/* Prepare words slice */
@@ -79,11 +88,11 @@ func SHA1Digest(input []byte) [digestSize]byte {
 		}
 
 		/* Initialize hash value for this chunk: */
-		a := h[0]
-		b := h[1]
-		c := h[2]
-		d := h[3]
-		e := h[4]
+		a := hash.h[0]
+		b := hash.h[1]
+		c := hash.h[2]
+		d := hash.h[3]
+		e := hash.h[4]
 
 		/* Main loop: */
 		var f, k uint32
@@ -111,11 +120,11 @@ func SHA1Digest(input []byte) [digestSize]byte {
 		}
 
 		/* Add this chunk's hash to result so far: */
-		h[0] = h[0] + a
-		h[1] = h[1] + b
-		h[2] = h[2] + c
-		h[3] = h[3] + d
-		h[4] = h[4] + e
+		hash.h[0] = hash.h[0] + a
+		hash.h[1] = hash.h[1] + b
+		hash.h[2] = hash.h[2] + c
+		hash.h[3] = hash.h[3] + d
+		hash.h[4] = hash.h[4] + e
 	}
 
 	/* Produce the final hash value (big-endian) as a 160-bit number (32 bit * 5 = 160 bit): */
@@ -123,19 +132,19 @@ func SHA1Digest(input []byte) [digestSize]byte {
 
 	var digest [digestSize]byte // digest size is 20 bytes
 
-	binary.BigEndian.PutUint32(digest[0:4], h[0])
-	binary.BigEndian.PutUint32(digest[4:8], h[1])
-	binary.BigEndian.PutUint32(digest[8:12], h[2])
-	binary.BigEndian.PutUint32(digest[12:16], h[3])
-	binary.BigEndian.PutUint32(digest[16:20], h[4])
+	binary.BigEndian.PutUint32(digest[0:4], hash.h[0])
+	binary.BigEndian.PutUint32(digest[4:8], hash.h[1])
+	binary.BigEndian.PutUint32(digest[8:12], hash.h[2])
+	binary.BigEndian.PutUint32(digest[12:16], hash.h[3])
+	binary.BigEndian.PutUint32(digest[16:20], hash.h[4])
 
 	return digest
 }
 
-func SHA1HexDigest(input []byte) string {
+func (hash *SHA1) HexDigest(input []byte) string {
 	var sum string
 
-	digest := SHA1Digest(input)
+	digest := hash.Digest(input)
 	for _, b := range digest {
 		sum += fmt.Sprintf("%02x", b)
 	}
@@ -143,11 +152,20 @@ func SHA1HexDigest(input []byte) string {
 	return sum
 }
 
-func leftRotate(word uint32, bits uint32) uint32 {
-	return (((word) << (bits)) | ((word) >> (32 - (bits))))
+func NewSHA1() *SHA1 {
+	hash := &SHA1{}
+	hash.Init()
+
+	return hash
 }
 
 func SHA1SecretPrefixMAC(key []byte, message []byte) []byte {
-	digest := SHA1Digest(append(key, message...))
+	hash := NewSHA1()
+
+	digest := hash.Digest(append(key, message...))
 	return digest[:] // to get rid of the [20]byte type that is returned by SHA1Digest, thus allowing these values to be used with bytes.Equal
+}
+
+func leftRotate(word uint32, bits uint32) uint32 {
+	return (((word) << (bits)) | ((word) >> (32 - (bits))))
 }

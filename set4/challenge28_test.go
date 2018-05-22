@@ -23,7 +23,8 @@ func TestSHA1(t *testing.T) {
 
 	for i, testMessage := range testArray {
 		expected := resultArray[i]
-		actual := SHA1HexDigest(testMessage)
+		sha1 := NewSHA1()
+		actual := sha1.HexDigest(testMessage)
 		if expected != actual {
 			t.Error("Failed to compute SHA1 for", string(testMessage), "expected", expected, "got", actual)
 		}
