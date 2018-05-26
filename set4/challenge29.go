@@ -2,8 +2,17 @@ package set4
 
 import "encoding/binary"
 
+/**
+ * Resources on hash length extension attack:
+ *
+ * http://netifera.com/research/flickr_api_signature_forgery.pdf
+ * https://en.wikipedia.org/wiki/Length_extension_attack
+ * https://blog.skullsecurity.org/2012/everything-you-need-to-know-about-hash-length-extension-attacks
+ * https://www.whitehatsec.com/blog/hash-length-extension-attacks/
+ * https://web.archive.org/web/20120826010038/http://www.vnsecurity.net/2010/03/codegate_challenge15_sha1_padding_attack/
+ */
 func createSHA1SecretPrefixMACCraftedInput(initialState []byte, message []byte, extension []byte, secretPrefixLength int) ([]byte, []byte) {
-	glue := createGluePadding(len(message) + secretPrefixLength)
+	glue := createSHA1GluePadding(len(message) + secretPrefixLength)
 
 	var craftedInput []byte
 	craftedInput = append(craftedInput, message...)
@@ -25,6 +34,14 @@ func createSHA1SecretPrefixMACCraftedInput(initialState []byte, message []byte, 
 	return craftedInput, craftedHash[:]
 }
 
+func createSHA1GluePadding(length int) []byte {
+	glue := createGluePadding(length)
+
+	appendBigEndianMessageLength(&glue, length)
+
+	return glue
+}
+
 func createGluePadding(length int) []byte {
 	glue := []byte{0x80} // padding
 
@@ -34,11 +51,12 @@ func createGluePadding(length int) []byte {
 		glue = append(glue, byte(0x00))
 	}
 
-	/* append ml, the original message length, as a 64-bit big-endian integer. Thus, the total length is a multiple of 512 bits. */
+	return glue
+}
+
+func appendBigEndianMessageLength(glue *[]byte, length int) {
 	msgLengthBytes := make([]byte, 8)
 	binary.BigEndian.PutUint64(msgLengthBytes, uint64(length*8))
 
-	glue = append(glue, msgLengthBytes...)
-
-	return glue
+	*glue = append(*glue, msgLengthBytes...)
 }

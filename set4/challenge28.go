@@ -17,8 +17,8 @@ import (
  * http://www.herongyang.com/Cryptography/SHA1-Message-Digest-Algorithm-Overview.html
  */
 
-const digestSize = 20 // bytes
-const blockSize = 64  // bytes
+const SHA1DigestSize = 20 // bytes
+const SHA1BlockSize = 64  // bytes
 
 const (
 	h0 uint32 = 0x67452301
@@ -45,7 +45,7 @@ func (hash *SHA1) Init() {
 	hash.h = [5]uint32{h0, h1, h2, h3, h4}
 }
 
-func (hash *SHA1) Digest(input []byte) [digestSize]byte {
+func (hash *SHA1) Digest(input []byte) [SHA1DigestSize]byte {
 	hash.l += len(input)
 	ml := hash.l * 8 /* message length in bits */
 
@@ -69,8 +69,8 @@ func (hash *SHA1) Digest(input []byte) [digestSize]byte {
 
 	nl := len(input) /* length is different after the padding process */
 	/* break message into 512-bit chunks */
-	for i := 0; i < nl; i += blockSize { // 512 bits = 64 bytes
-		chunk := input[i : i+blockSize]
+	for i := 0; i < nl; i += SHA1BlockSize { // 512 bits = 64 bytes
+		chunk := input[i : i+SHA1BlockSize]
 
 		/* Prepare words slice */
 		w := make([]uint32, 80)
@@ -130,7 +130,7 @@ func (hash *SHA1) Digest(input []byte) [digestSize]byte {
 	/* Produce the final hash value (big-endian) as a 160-bit number (32 bit * 5 = 160 bit): */
 	// hh := (h[0] << 128) | (h[1] << 96) | (h[2] << 64) | (h[3] << 32) | h[4]
 
-	var digest [digestSize]byte // digest size is 20 bytes
+	var digest [SHA1DigestSize]byte // digest size is 20 bytes
 
 	binary.BigEndian.PutUint32(digest[0:4], hash.h[0])
 	binary.BigEndian.PutUint32(digest[4:8], hash.h[1])
