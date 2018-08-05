@@ -1,6 +1,7 @@
 package set4
 
 import (
+	"bytes"
 	"cryptopals/utils"
 	"fmt"
 	"testing"
@@ -65,10 +66,10 @@ func TestHmacSha1(t *testing.T) {
 }
 
 func TestInsecureCompare(t *testing.T) {
-	if insecureCompare([]byte("abc"), []byte("def")) == true {
+	if insecureCompare([]byte("abc"), []byte("def"), time.Microsecond) == true {
 		t.Error("Failed comparing messages, should have received false when messages differ")
 	}
-	if insecureCompare([]byte("abc"), []byte("abc")) == false {
+	if insecureCompare([]byte("abc"), []byte("abc"), time.Microsecond) == false {
 		t.Error("Failed comparing messages, should have received true when messages are equal")
 	}
 }
@@ -79,31 +80,17 @@ func TestTimingLeakAttack(t *testing.T) {
 		t.Error("Failed to generate file name")
 	}
 
-	signature := make([]byte, SHA1DigestSize) // this will be the hmac the "server" computes
-
-	for i := 0; i < len(signature); i++ {
-		longestTime := time.Microsecond
-		currentByte := 0
-
-		for c := 0; c <= 255; c++ {
-			signature[i] = byte(c)
-
-			start := time.Now()
-			mockWebServerUrl(file, signature)
-			elapsed := time.Since(start)
-
-			if elapsed > longestTime {
-				longestTime = elapsed
-				currentByte = c
-			}
-		}
-
-		signature[i] = byte(currentByte)
-	}
+	serverUrl := mockWebServerUrl(10 * time.Millisecond) // using a value that does not take too much time waiting
+	numberOfBytesToRecover := 5                          // recover only first 5 bytes in order to reduce the total time it takes the test to finish (aka brute force time)
+	signature := recoverSignatureUsingTimingAttack(file, serverUrl, numberOfBytesToRecover)
 
 	t.Log("Recovered signature is", fmt.Sprintf("%x", signature))
 
-	if !mockWebServerUrl(file, signature) {
+	expectedSignature := getFileSignature(file)
+
+	t.Log("Expected signature was", fmt.Sprintf("%x", expectedSignature))
+
+	if !bytes.Equal(signature[:numberOfBytesToRecover], expectedSignature[:numberOfBytesToRecover]) {
 		t.Error("Failed to recover HMAC using timing leak attack")
 	}
 }

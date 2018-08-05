@@ -51,7 +51,7 @@ func hmacSha1(key []byte, message []byte) []byte {
 /**
  * Compare if two messages are equal using early exit
  */
-func insecureCompare(a []byte, b []byte) bool {
+func insecureCompare(a []byte, b []byte, wait time.Duration) bool {
 	if len(a) != len(b) {
 		return false
 	}
@@ -60,25 +60,70 @@ func insecureCompare(a []byte, b []byte) bool {
 		if a[i] != b[i] {
 			return false
 		}
-		time.Sleep(2 * time.Millisecond) // using a value that does not take too much time waiting
+		time.Sleep(wait)
 	}
 
 	return true
 }
 
 /**
- * To make it faster to test the timing leak attack, instead of using a
- * separated web server, I'm gonna use this function.
- *
- * This acts like an oracle, returns true if signature is valid, false otherwise.
+ * Returns an HMAC computed with a "secret" key
  */
-func mockWebServerUrl(file []byte, signature []byte) bool {
+func getFileSignature(file []byte) []byte {
 	// to make it easier, I'll use the md4 of the file name as the key
 	// in order to have the same key every time when doing checks
 	md4 := NewMD4()
 	key := md4.Sum(file)
 
-	hmac := hmacSha1(key, file)
+	return hmacSha1(key, file)
+}
 
-	return insecureCompare(hmac, signature)
+/**
+ * To make it faster to test the timing leak attack, instead of using a
+ * separated web server, I'm gonna use this function.
+ *
+ * This "server" receives a duration to pass to the comparison function,
+ * and returns a function that acts like an oracle, it returns true
+ * if signature is valid, false otherwise.
+ */
+func mockWebServerUrl(wait time.Duration) func(file []byte, signature []byte) bool {
+	return func(file []byte, signature []byte) bool {
+		hmac := getFileSignature(file)
+
+		return insecureCompare(hmac, signature, wait)
+	}
+}
+
+/**
+ * By passing a number of bytes to recover it will speed up the process
+ * and only check for the first number of specified bytes.
+ */
+func recoverSignatureUsingTimingAttack(file []byte, serverUrl func(file []byte, signature []byte) bool, numberOfBytesToRecover int) []byte {
+	signature := make([]byte, SHA1DigestSize) // this will be the recovered hmac
+
+	if numberOfBytesToRecover > len(signature) {
+		numberOfBytesToRecover = len(signature)
+	}
+
+	for i := 0; i < numberOfBytesToRecover; i++ {
+		longestTime := time.Microsecond // start with something way to low
+		currentByte := 0
+
+		for c := 0; c <= 255; c++ {
+			signature[i] = byte(c)
+
+			start := time.Now()
+			serverUrl(file, signature)
+			elapsed := time.Since(start)
+
+			if elapsed > longestTime {
+				longestTime = elapsed
+				currentByte = c
+			}
+		}
+
+		signature[i] = byte(currentByte)
+	}
+
+	return signature
 }
