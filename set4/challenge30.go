@@ -128,6 +128,13 @@ func (hash *MD4) HexDigest(input []byte) string {
 	return sum
 }
 
+func (hash *MD4) Sum(input []byte) []byte {
+	h := *hash // copy hash
+	digest := h.Digest(input)
+
+	return digest[:] // to get rid of the [16]byte type that is returned by MD4Digest, thus allowing these values to be used with bytes.Equal
+}
+
 func f(x uint32, y uint32, z uint32) uint32 {
 	return (x & y) | ((^x) & z)
 }
@@ -150,8 +157,8 @@ func NewMD4() *MD4 {
 func MD4SecretPrefixMAC(key []byte, message []byte) []byte {
 	hash := NewMD4()
 
-	digest := hash.Digest(append(key, message...))
-	return digest[:] // to get rid of the [16]byte type that is returned by MD4Digest, thus allowing these values to be used with bytes.Equal
+	digest := hash.Sum(append(key, message...))
+	return digest
 }
 
 func createMD4SecretPrefixMACCraftedInput(initialState []byte, message []byte, extension []byte, secretPrefixLength int) ([]byte, []byte) {

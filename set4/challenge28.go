@@ -152,6 +152,13 @@ func (hash *SHA1) HexDigest(input []byte) string {
 	return sum
 }
 
+func (hash *SHA1) Sum(input []byte) []byte {
+	h := *hash // copy hash
+	digest := h.Digest(input)
+
+	return digest[:] // to get rid of the [20]byte type that is returned by SHA1Digest, thus allowing these values to be used with bytes.Equal
+}
+
 func NewSHA1() *SHA1 {
 	hash := &SHA1{}
 	hash.Init()
@@ -162,8 +169,8 @@ func NewSHA1() *SHA1 {
 func SHA1SecretPrefixMAC(key []byte, message []byte) []byte {
 	hash := NewSHA1()
 
-	digest := hash.Digest(append(key, message...))
-	return digest[:] // to get rid of the [20]byte type that is returned by SHA1Digest, thus allowing these values to be used with bytes.Equal
+	digest := hash.Sum(append(key, message...))
+	return digest
 }
 
 func leftRotate(word uint32, bits uint32) uint32 {
